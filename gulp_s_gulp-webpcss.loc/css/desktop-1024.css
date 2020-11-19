@@ -1,0 +1,5 @@
+@media-webkit-full-screen (min-width: 1024px) {
+  h1 {
+    color: #000;
+  }
+}
