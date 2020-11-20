@@ -46,11 +46,11 @@ const path = {
   clean: "./" + projectedRezult + "/"
 };
 
-// переменные для написания сценария
-const { src, dest } = require('gulp');
+// импортируем (деструктиризируем) встроенные ф-и из gulp
+const {src, dest} = require('gulp');
 // сам галп
 const  gulp = require('gulp');
-// пакет автоперезагрузки страницы
+// пакет автоперезагрузки страницы, и вызываем строеный метод для работы пакета
 const  browserSyng = require('browser-sync').create();
 // пакет сборки из разных модулей html в 1
 const fileInclude = require('gulp-file-include');
@@ -80,15 +80,15 @@ const svgSprite = require('gulp-svg-sprite');
 // ф-я перезапуска страницы
 function browserSyngAut()
 {
+  // сервер
+  // базовая папка
+  // порт по которому будет открываться
+  // отключаем табличку что браузер переобновился
   browserSyng.init({
-    // сервер
     server: {
-      // базовая папка
       baseDir: "./" + projectedRezult + "/",
     },
-    // порт по которому будет открываться
     port: 3000,
-    // отключаем табличку что браузер переобновился
     notify: false
   })
 };
@@ -97,12 +97,12 @@ function browserSyngAut()
 function echoHtml()
 {
   // pipe через которую мы обращаемся к gulp
-  // просим наш файл html собрать из имеющихся модулей html
+  // просим наш файл html собрать из имеющихся модулей html с префиксом
   // подключчаем фромат webp в html
   // ф-я возращает файл измененый из src в папку рузультата dist
   // обновляем странцу после этого
   return src(path.src.html)
-    .pipe(fileInclude())
+    .pipe(fileInclude({prefix: "@@"}))
     .pipe(webpHtml())
     .pipe(dest(path.build.html))
     .pipe(browserSyng.stream())
@@ -209,10 +209,11 @@ function echoPages()
 }
 
 // gulp task для svg вызывающийся отдельно
-// обьеденяем спрайты
-// выгружаем спрайты в папку dist
-// запускаем сначала gulp, после всех задач, в отдельном терминале вызываем task: gulp svgSprite
 gulp.task('svgSprite', function() {
+  
+  // обьеденяем спрайты
+  // выгружаем спрайты в папку dist
+  // запускаем сначала gulp, после всех задач, в отдельном терминале вызываем task: gulp svgSprite
   return gulp.src([projectedSourse + '/iconsprite/*.svg'])
     .pipe(svgSprite({
         mode: {
@@ -227,20 +228,20 @@ gulp.task('svgSprite', function() {
 
 
 
-// ф-я слежки за файлами, изменения которые произошли
+// ф-я слежки за файлами, изменения которые произошли, через встроеную ф-ю gulp.watch
 function agent007()
 {
   // из обьекта watch, и присваеваем ф-ю которая обрабатывает html
-  gulp.watch([path.watch.html], echoHtml)
   //из обьекта watch, и присваеваем ф-ю которая обрабатывает scssи css
-  gulp.watch([path.watch.css], echoScss)
   //из обьекта watch, и присваеваем ф-ю которая обрабатывает js
-  gulp.watch([path.watch.js], echoJs)
   //из обьекта watch, и присваеваем ф-ю которая обрабатывает img
+  //из обьекта watch, и присваеваем ф-ю которая обрабатывает md
+  //из обьекта watch, и присваеваем ф-ю которая обрабатывает pacges
+  gulp.watch([path.watch.html], echoHtml)
+  gulp.watch([path.watch.css], echoScss)
+  gulp.watch([path.watch.js], echoJs)
   gulp.watch([path.watch.img], echoImg)
-  //из обьекта watch, и присваеваем ф-ю которая обрабатывает md
   gulp.watch([path.watch.md], echoMd)
-  //из обьекта watch, и присваеваем ф-ю которая обрабатывает md
   gulp.watch([path.watch.pages], echoPages)
 }
 
@@ -250,12 +251,12 @@ function del()
   return autoDel(path.clean);
 }
 
-// запуск ф-и стилей, +  которые должны выполняться + одновременон выполнение
+// запуск через встроеную ф-ю gulp, ф-й которые зарегистрировали которые должны выполняться + одновременон выполнение
 let build = gulp.series(del, gulp.parallel(echoHtml, echoImg, echoScss, echoJs, echoMd, echoPages));
-// запуск ф-и файлов папки dist, отслеживание изменений файлов папки src, перезагрузка старницы
+// запуск ф-и генерирование файлов в папку dist, отслеживание изменений файлов папки src, перезагрузка старницы
 let watch = gulp.parallel(build, agent007, browserSyngAut);
 
-// чтоб gulp заметил переменые новые
+// регистрируем созданые задачи в gulp
 exports.html = echoHtml;
 exports.css = echoScss;
 exports.js = echoJs;
