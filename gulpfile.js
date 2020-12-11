@@ -12,6 +12,7 @@ const path = {
     css: projectedRezult + "/css/",
     img: projectedRezult + "/img/",
     js: projectedRezult + "/js/",
+    fonts: projectedRezult + "/fonts/",
     md: projectedRezult + "/"
   },
   // пути откуда gulp будет брать исходники
@@ -26,6 +27,9 @@ const path = {
     img: projectedSourse + "/img/*.{jpg,png,svg,gif,ico,webp}",
     // считываем только файл script.js
     js: projectedSourse + "/js/script.js",
+    // считываем шрифты
+    fonts: projectedSourse + "/fonts/*.{ttf,otf}",
+    // 
     md: projectedSourse + "/*.md"
   },
   // файлы в которым постоянно отлавливаем изменеения или слушаем изменения
@@ -40,6 +44,8 @@ const path = {
     img: projectedSourse + "/img/*.{jpg,png,svg,gif,ico,webp}",
     // слушаем все подпапки, файлы с любым названием с разшерением js
     js: projectedSourse + "/js/*.js",
+    // считываем шрифты
+    fonts: projectedSourse + "/fonts/*.",
     md: projectedSourse + "/*.md"
   },
   // объект отвечает за удаление после каждого перезапуска
@@ -76,6 +82,12 @@ const webpHtml = require('gulp-webp-html');
 const webpCss = require('gulp-webpcss');
 // пакет для svg sprite
 const svgSprite = require('gulp-svg-sprite');
+// пакет тт2волф
+const ttf2woff = require('gulp-ttf2woff');
+// пакет тт2волф2
+const ttf2woff2 = require('gulp-ttf2woff2');
+// пакет ковертации otfVttf
+const fonter = require('gulp-fonter');
 
 // ф-я перезапуска страницы
 function browserSyngAut()
@@ -192,6 +204,19 @@ function echoImg()
     .pipe(browserSyng.stream())
 }
 
+// ф-я считывания шрифтов
+function echoFonts()
+{
+  src(path.src.fonts)
+  .pipe(ttf2woff())
+  .pipe(dest(path.build.fonts))
+  .pipe(browserSyng.stream());
+  return src(path.src.fonts)
+  .pipe(ttf2woff2())
+  .pipe(dest(path.build.fonts))
+  .pipe(browserSyng.stream());
+}
+
 // ф-я считывания и изменения md файла
 function echoMd()
 {
@@ -226,7 +251,17 @@ gulp.task('svgSprite', function() {
     .pipe(dest(path.build.img))
 })
 
+// task для конвертации ttf в otf
+// команда для запуска gulp otfVttf
+gulp.task('otfVttf', function() {
 
+  // получаем файлы otf
+  // конвертируем в ttf
+  // выгружаем в папку с исходниками
+  return gulp.src([projectedSourse + '/fonts/*.otf'])
+  .pipe(fonter({formats: ['ttf']}))
+  .pipe(dest(projectedSourse + '/fonts/'));
+})
 
 // ф-я слежки за файлами, изменения которые произошли, через встроеную ф-ю gulp.watch
 function agent007()
@@ -237,12 +272,14 @@ function agent007()
   //из обьекта watch, и присваеваем ф-ю которая обрабатывает img
   //из обьекта watch, и присваеваем ф-ю которая обрабатывает md
   //из обьекта watch, и присваеваем ф-ю которая обрабатывает pacges
+  //из обьекта watch, и присваеваем ф-ю которая обрабатывает fonts
   gulp.watch([path.watch.html], echoHtml)
   gulp.watch([path.watch.css], echoScss)
   gulp.watch([path.watch.js], echoJs)
   gulp.watch([path.watch.img], echoImg)
   gulp.watch([path.watch.md], echoMd)
   gulp.watch([path.watch.pages], echoPages)
+  gulp.watch([path.watch.fonts], echoFonts)
 }
 
 // ф-я автоудаления папки dist
@@ -252,7 +289,7 @@ function del()
 }
 
 // запуск через встроеную ф-ю gulp, ф-й которые зарегистрировали которые должны выполняться + одновременон выполнение
-let build = gulp.series(del, gulp.parallel(echoHtml, echoImg, echoScss, echoJs, echoMd, echoPages));
+let build = gulp.series(del, gulp.parallel(echoHtml, echoImg, echoScss, echoJs, echoMd, echoPages, echoFonts));
 // запуск ф-и генерирование файлов в папку dist, отслеживание изменений файлов папки src, перезагрузка старницы
 let watch = gulp.parallel(build, agent007, browserSyngAut);
 
@@ -261,6 +298,7 @@ exports.html = echoHtml;
 exports.css = echoScss;
 exports.js = echoJs;
 exports.img = echoImg;
+exports.fonts = echoFonts;
 exports.md = echoMd;
 exports.pages = echoPages;
 exports.build = build;
