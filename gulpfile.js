@@ -24,7 +24,7 @@ const path = {
     // считываем файлы все файлы .scss для генерации .css в папке dist и файлы css, файлы по приоритету, иначе работать не будут
     css: projectedSourse + "/css/*.{scss,css}",
     // считываем все подпапки что находиться в нутри img. с любым названием, но с расширением которое укажем
-    img: projectedSourse + "/img/*.{jpg,png,svg,gif,ico,webp}",
+    img: projectedSourse + "/img/**/*.{jpg,png,svg,gif,ico,webp}",
     // считываем только файл script.js
     js: projectedSourse + "/js/script.js",
     // считываем шрифты
@@ -41,7 +41,7 @@ const path = {
     // слушаем файлы все файлы .scss для генерации .css в папке dist и файлы css, файлы по приоритету, иначе работать не будут
     css: projectedSourse + "/css/*.{scss,css}",
     // слушаем все подпапки что находиться в нутри img. с любым названием, но с расширением которое укажем
-    img: projectedSourse + "/img/*.{jpg,png,svg,gif,ico,webp}",
+    img: projectedSourse + "/img/**/*.{jpg,png,svg,gif,ico,webp}",
     // слушаем все подпапки, файлы с любым названием с разшерением js
     js: projectedSourse + "/js/*.js",
     // считываем шрифты
