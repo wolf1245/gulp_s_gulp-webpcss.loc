@@ -1,9 +1,25 @@
 /*DEFAULT STYLE START*/
 *{
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    outline: none;
 }
+
+ul,ol {
+  list-style: none;
+}
+
+:root {
+	--widthcolum: 12;
+	--width-advantages-list-item: 3;
+	--main-orange: #cc9933;
+	--main-grey: #999999;
+	--main-darkgrey: #333333;
+	--main-white: #fff;
+}
+
 h1
 {
     color: rgb(247, 0, 0);
@@ -14,6 +30,7 @@ h2{
     font-size: 15px;
     display: flex;
 }
+
 body{
     background: url("../img/1.jpg") 0 0 repeat;
     height: 100vmax;
